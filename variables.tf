@@ -2,6 +2,11 @@ variable "settings" {
   default = {}
 }
 
+# map "local.merged_settings" does not have homogenous types. found TypeList and then TypeString
+variable "tags" {
+  default = []
+}
+
 locals {
   default_settings = {
     node_count                 = 0
@@ -37,6 +42,6 @@ locals {
     preemptible = "${local.merged_settings["preemptible"]}"
 
     #service_account
-    #tags
+    tags = "${var.tags}"
   }
 }
