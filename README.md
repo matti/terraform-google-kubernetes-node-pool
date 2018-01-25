@@ -25,31 +25,48 @@ locals {
     node_auto_upgrade = true
   }
 
+  common_labels = {
+    common_label1 = "value1"
+    common_label2 = "value2"
+  }
+
+  common_tags = ["every"]
+
   baseline_settings = {
     name                       = "baseline"
     node_count                 = 1
     machine_type               = "n1-highcpu-4"
   }
 
+  baseline_labels = {
+    baseline_label1 = "value1"
+  }
+
+  baseline_tags = ["tag1"]
+
   work_settings = {
     name                       = "work"
     preemptible                = true
     machine_type               = "n1-highcpu-4"
-    autoscaling                = true
     autoscaling_min_node_count = 0
     autoscaling_max_node_count = 3
   }
 }
 
-module "baseline_node_pool" {
+module "mycluster_baseline_node_pool" {
   source = "github.com/matti/terraform-google-kubernetes-node-pool"
 
   settings = "${merge(local.common_settings, local.baseline_settings)}"
+  labels   = "${merge(local.common_labels, local.baseline_labels)}"
+  tags     = "${concat(local.common_tags, local.baseline_tags)}"
 }
 
-module "mycluster_node_pool_autoscale" {
+module "mycluster_node_pool_work" {
   source = "github.com/matti/terraform-google-kubernetes-node-pool"
-
   settings = "${merge(local.common_settings, local.work_settings)}"
 }
-````
+```
+
+## Test
+
+  GOOGLE_PROJECT=your-project GOOGLE_REGION=europe-west1 test/test.sh <testname>
